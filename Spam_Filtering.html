@@ -15425,7 +15425,7 @@ Name: Label, dtype: float64</pre>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">3</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">Nvoc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vocabulary</span><span class="p">)</span>
 <span class="n">Pspam</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()[</span><span class="s1">&#39;spam&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">train_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">Pham</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()[</span><span class="s1">&#39;ham&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">train_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -15451,13 +15451,19 @@ Name: Label, dtype: float64</pre>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">p_w_spam</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="n">Nwspam</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;spam&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">Nwspam</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Nspam</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">Nvoc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">Nwspam</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;spam&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">Nwspam</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Nspam</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">Nvoc</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
 
 
 <span class="k">def</span> <span class="nf">p_w_ham</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="n">Nwham</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ham&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">Nwham</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Nham</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">Nvoc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">Nwham</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ham&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">Nwham</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Nham</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">Nvoc</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
 </pre></div>
 
      </div>
@@ -15562,6 +15568,7 @@ Name: Label, dtype: float64</pre>
       <th>Label</th>
       <th>SMS</th>
       <th>predicted Multinomial</th>
+      <th>predicted Multivariate</th>
     </tr>
   </thead>
   <tbody>
@@ -15570,11 +15577,13 @@ Name: Label, dtype: float64</pre>
       <td>ham</td>
       <td>[aight, should, i, just, plan, to, come, up, l...</td>
       <td>ham</td>
+      <td>ham</td>
     </tr>
     <tr>
       <th>1</th>
       <td>ham</td>
       <td>[die, i, accidentally, deleted, e, msg, i, sup...</td>
+      <td>ham</td>
       <td>ham</td>
     </tr>
     <tr>
@@ -15582,17 +15591,20 @@ Name: Label, dtype: float64</pre>
       <td>spam</td>
       <td>[welcome, to, uk, mobile, date, this, msg, is,...</td>
       <td>spam</td>
+      <td>spam</td>
     </tr>
     <tr>
       <th>3</th>
       <td>ham</td>
       <td>[this, is, wishing, you, a, great, day, moji, ...</td>
       <td>ham</td>
+      <td>ham</td>
     </tr>
     <tr>
       <th>4</th>
       <td>ham</td>
       <td>[thanks, again, for, your, reply, today, when,...</td>
+      <td>ham</td>
       <td>ham</td>
     </tr>
   </tbody>
@@ -15739,12 +15751,6 @@ Name: Label, dtype: float64</pre>
       <th>588</th>
       <td>ham</td>
       <td>[we, have, sent, jd, for, customer, service, c...</td>
-      <td>spam</td>
-    </tr>
-    <tr>
-      <th>876</th>
-      <td>ham</td>
-      <td>[garbage, bags, eggs, jam, bread, hannaford, w...</td>
       <td>spam</td>
     </tr>
     <tr>
@@ -16043,13 +16049,19 @@ P(W|S) = \frac{1 + N_{W,S}}{2 + N_S}
 <span class="n">Nh</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()[</span><span class="s1">&#39;ham&#39;</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">p_w_spam_multivariate</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="n">Nwspam</span> <span class="o">=</span> <span class="n">train_data_multivariate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multivariate</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;spam&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multivariate</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Nwspam</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Ns</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">Nwspam</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;spam&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> 
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Nwspam</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Ns</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
 
 
 <span class="k">def</span> <span class="nf">p_w_ham_multivariate</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
-    <span class="n">Nwham</span> <span class="o">=</span> <span class="n">train_data_multivariate</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multivariate</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ham&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multivariate</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Nwham</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Nh</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">Nwham</span> <span class="o">=</span> <span class="n">train_data_multinomial</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">train_data_multinomial</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ham&#39;</span><span class="p">,</span> <span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Nwham</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Nh</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
 </pre></div>
 
      </div>
@@ -16232,7 +16244,7 @@ P(W|S) = \frac{1 + N_{W,S}}{2 + N_S}
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>The correct prediction are 85.01%
+<pre>The correct prediction are 87.97%
 </pre>
 </div>
 </div>
@@ -16328,9 +16340,9 @@ P(W|S) = \frac{1 + N_{W,S}}{2 + N_S}
       <td>spam</td>
     </tr>
     <tr>
-      <th>25</th>
+      <th>30</th>
       <td>ham</td>
-      <td>[what, do, u, reckon, as, need, 2, arrange, tr...</td>
+      <td>[miss, call, miss, call, khelate, kintu, oppon...</td>
       <td>ham</td>
       <td>spam</td>
     </tr>
@@ -16342,16 +16354,16 @@ P(W|S) = \frac{1 + N_{W,S}}{2 + N_S}
       <td>...</td>
     </tr>
     <tr>
-      <th>1088</th>
+      <th>1075</th>
       <td>ham</td>
-      <td>[ic, there, are, a, lotta, childporn, cars, then]</td>
+      <td>[hey, chief, can, you, give, me, a, bell, when...</td>
       <td>ham</td>
       <td>spam</td>
     </tr>
     <tr>
-      <th>1091</th>
+      <th>1084</th>
       <td>ham</td>
-      <td>[you, know, wot, people, wear, t, shirts, jump...</td>
+      <td>[armand, says, get, your, ass, over, to, epsilon]</td>
       <td>ham</td>
       <td>spam</td>
     </tr>
@@ -16378,7 +16390,7 @@ P(W|S) = \frac{1 + N_{W,S}}{2 + N_S}
     </tr>
   </tbody>
 </table>
-<p>167 rows × 4 columns</p>
+<p>134 rows × 4 columns</p>
 </div>
 </div>
 
